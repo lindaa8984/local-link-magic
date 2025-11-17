@@ -473,7 +473,8 @@ export default function Payroll() {
                   <TableHead className="text-center font-bold border">{t('employees.transportationAllowance')}</TableHead>
                   <TableHead className="text-center font-bold border">{t('employees.foodAllowance')}</TableHead>
                   <TableHead className="text-center font-bold border">{t('employees.otherAllowances')}</TableHead>
-                  <TableHead className="text-center font-bold border">{t('payroll.bonus')}</TableHead>
+                  <TableHead className="text-center font-bold border">{t('payroll.overtime')}</TableHead>
+                  <TableHead className="text-center font-bold border">{t('payroll.incentive')}</TableHead>
                   <TableHead className="text-center font-bold border bg-red-50">{t('payroll.deductions')}</TableHead>
                   <TableHead className="text-center font-bold border bg-primary/10">{t('payroll.netSalary')}</TableHead>
                 </TableRow>
@@ -481,13 +482,13 @@ export default function Payroll() {
               <TableBody>
                 {loadingRecords ? (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center py-8">
+                    <TableCell colSpan={12} className="text-center py-8">
                       {t('common.loading')}
                     </TableCell>
                   </TableRow>
                 ) : !payrollRecords || payrollRecords.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center py-8">
+                    <TableCell colSpan={12} className="text-center py-8">
                       {t('common.noData')}
                     </TableCell>
                   </TableRow>
@@ -525,7 +526,22 @@ export default function Payroll() {
                           {otherAllowances.toLocaleString()}
                         </TableCell>
                         <TableCell className="text-center border">
-                          {bonus > 0 ? bonus.toLocaleString() : '0'}
+                          {(() => {
+                            if (!salaryComponents) return '0';
+                            const amount = salaryComponents
+                              .filter(c => c.type === 'allowance' && (/overtime/i.test(c.name_en) || /اضافي|أجر\s?إضافي/i.test(c.name_ar)))
+                              .reduce((sum, c) => sum + (c.is_percentage ? (record.base_salary * c.value / 100) : c.value), 0);
+                            return amount > 0 ? amount.toLocaleString() : '0';
+                          })()}
+                        </TableCell>
+                        <TableCell className="text-center border">
+                          {(() => {
+                            if (!salaryComponents) return '0';
+                            const amount = salaryComponents
+                              .filter(c => c.type === 'allowance' && (/incentive|bonus/i.test(c.name_en) || /حافز|مكافأة/i.test(c.name_ar)))
+                              .reduce((sum, c) => sum + (c.is_percentage ? (record.base_salary * c.value / 100) : c.value), 0);
+                            return amount > 0 ? amount.toLocaleString() : '0';
+                          })()}
                         </TableCell>
                         <TableCell className="text-center border text-red-600">
                           {(record.total_deductions || 0).toLocaleString()}

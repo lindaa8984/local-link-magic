@@ -224,7 +224,8 @@
     "generate": "Generate",
     "payrollDetails": "Payroll Details",
     "downloadSlip": "Download Slip",
-    "bonus": "Bonus & Incentives",
+    "overtime": "Overtime Pay",
+    "incentive": "Incentive",
     "status": {
       "pending": "Pending",
       "approved": "Approved",
