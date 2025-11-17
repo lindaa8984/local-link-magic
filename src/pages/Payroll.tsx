@@ -65,6 +65,10 @@ interface PayrollRecord {
     full_name: string;
     employee_number: string;
     department_id: string | null;
+    housing_allowance: number;
+    transportation_allowance: number;
+    food_allowance: number;
+    other_allowances: number;
     departments: {
       name_ar: string;
       name_en: string;
@@ -120,6 +124,10 @@ export default function Payroll() {
             full_name,
             employee_number,
             department_id,
+            housing_allowance,
+            transportation_allowance,
+            food_allowance,
+            other_allowances,
             departments (
               name_ar,
               name_en
@@ -461,31 +469,35 @@ export default function Payroll() {
                   <TableHead className="text-center font-bold border">{t('payroll.employeeName')}</TableHead>
                   <TableHead className="text-center font-bold border">{t('payroll.department')}</TableHead>
                   <TableHead className="text-center font-bold border">{t('payroll.baseSalary')}</TableHead>
-                  <TableHead className="text-center font-bold border bg-green-100" colSpan={4}>{t('payroll.totalAllowances')}</TableHead>
-                  <TableHead className="text-center font-bold border bg-blue-50">{t('payroll.grossSalary')}</TableHead>
+                  <TableHead className="text-center font-bold border">{t('employees.housingAllowance')}</TableHead>
+                  <TableHead className="text-center font-bold border">{t('employees.transportationAllowance')}</TableHead>
+                  <TableHead className="text-center font-bold border">{t('employees.foodAllowance')}</TableHead>
+                  <TableHead className="text-center font-bold border">{t('employees.otherAllowances')}</TableHead>
+                  <TableHead className="text-center font-bold border">{t('payroll.bonus')}</TableHead>
                   <TableHead className="text-center font-bold border bg-red-50">{t('payroll.deductions')}</TableHead>
                   <TableHead className="text-center font-bold border bg-primary/10">{t('payroll.netSalary')}</TableHead>
-                  <TableHead className="text-center font-bold border">{t('common.status')}</TableHead>
-                  <TableHead className="text-center font-bold border">{t('common.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loadingRecords ? (
                   <TableRow>
-                    <TableCell colSpan={14} className="text-center py-8">
+                    <TableCell colSpan={11} className="text-center py-8">
                       {t('common.loading')}
                     </TableCell>
                   </TableRow>
                 ) : !payrollRecords || payrollRecords.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={14} className="text-center py-8">
+                    <TableCell colSpan={11} className="text-center py-8">
                       {t('common.noData')}
                     </TableCell>
                   </TableRow>
                 ) : (
                   payrollRecords.map((record) => {
-                    const totalAllowances = record.total_allowances || 0;
-                    const grossSalary = record.base_salary + totalAllowances;
+                    const housingAllowance = record.employees.housing_allowance || 0;
+                    const transportationAllowance = record.employees.transportation_allowance || 0;
+                    const foodAllowance = record.employees.food_allowance || 0;
+                    const otherAllowances = record.employees.other_allowances || 0;
+                    const bonus = record.total_allowances - (housingAllowance + transportationAllowance + foodAllowance + otherAllowances);
                     
                     return (
                       <TableRow key={record.id} className="hover:bg-muted/50">
@@ -500,17 +512,23 @@ export default function Payroll() {
                         <TableCell className="text-center border font-medium">
                           {record.base_salary.toLocaleString()}
                         </TableCell>
-                        <TableCell className="text-center border text-green-600" colSpan={4}>
-                          {totalAllowances.toLocaleString()}
+                        <TableCell className="text-center border">
+                          {housingAllowance.toLocaleString()}
                         </TableCell>
-                        <TableCell className="text-center border font-bold text-green-600">
-                          {totalAllowances.toLocaleString()}
+                        <TableCell className="text-center border">
+                          {transportationAllowance.toLocaleString()}
                         </TableCell>
-                        <TableCell className="text-center border font-bold text-blue-600">
-                          {grossSalary.toLocaleString()}
+                        <TableCell className="text-center border">
+                          {foodAllowance.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-center border">
+                          {otherAllowances.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-center border">
+                          {bonus > 0 ? bonus.toLocaleString() : '0'}
                         </TableCell>
                         <TableCell className="text-center border text-red-600">
-                          {record.total_deductions.toLocaleString()}
+                          {(record.total_deductions || 0).toLocaleString()}
                         </TableCell>
                         <TableCell className="text-center border font-bold text-lg text-primary">
                           {record.net_salary.toLocaleString()}
