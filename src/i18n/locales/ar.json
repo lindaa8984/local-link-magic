@@ -226,7 +226,8 @@
     "payrollDetails": "تفاصيل المرتب",
     "downloadSlip": "تحميل قسيمة الراتب",
     "approve": "الموافقة",
-    "bonus": "حافز وأجر إضافي",
+    "overtime": "أجر إضافي",
+    "incentive": "حافز",
     "status": {
       "pending": "قيد الانتظار",
       "approved": "تمت الموافقة",
